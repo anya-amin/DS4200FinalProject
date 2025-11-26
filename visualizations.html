@@ -30,9 +30,51 @@
     <section class="project-intro">
         <div class="container">
             <h2>Visualizations Overview</h2>
-            <p>
-                Insert Charts here
-            </p>
+            <div class="chart-section">
+                <h3>Box Plot: Price per Night by Room Type and Neighborhood</h3>
+                <p>
+                    In this box plot, the nightly Airbnb prices are being compared across room type and neighborhood. The user can use the drop-down to select the neighborhood and using the legend on the right to identify the colors, the boxes can be explored for each room type. In this chart, it clearly shows how room type has a significant effect on the nightly prices, as an entire home is relatively more across all neighborhoods than just a private room. The use of showing the different neighborhoods exemplifies how this holds true across all of them, except for one outlier of Back Bay. In Back Bay, a private room is actually slightly more money in comparison to a home, which shows how neighborhoods can affect how the prices are for different types. Given that Back Bay is a more touristic area, this would make sense. Exploring all the neighborhoods would be helpful to get a feel for this pricing. 
+                </p>
+            
+                <iframe 
+                    src="box_plot.html" 
+                    width="100%" 
+                    height="600px" 
+                    style="border:none; border-radius:12px;">
+                </iframe>
+            </div>
+
+            <div class="chart-section">
+                <h3>Scatter Plot: Listings per Host vs. Average Price + Host Response Rate</h3>
+            
+                <p>
+                    In this scatter plot, the number of listings per host is compared to their average price per night. Then, using an interval brush, one can explore the host response rate, also compared to the average price per night for that host. In the first chart, large multi-listing hosts mainly cluster in the lower price range (under $200 per night), suggesting that hosts tend to operate cheaper, more standardized units, while higher-priced listings (above $400) are owned by hosts with only one or a few properties. In the second chart, host response rates remain consistently high (between 90% and 100%) across all price levels, showing that both budget and luxury listings provide similarly fast communication. A few low-response outliers exist, but they appear randomly across different price points. Overall, the charts suggest that Airbnb pricing is not strongly influenced by responsiveness, meanwhile slightly affected by the number of listings per host. 
+
+                </p>
+            
+                <iframe 
+                    src="scatter.html" 
+                    width="100%" 
+                    height="650px" 
+                    style="border:none; border-radius:12px; margin-top: 20px;">
+                </iframe>
+            </div>
+
+            <div class="chart-section">
+                <h3>Heatmap: Correlation Between Airbnb Listing Characteristics</h3>
+            
+                <p>
+                    In this chart above, it is showing a heatmap of different quantitative factors in relation to Airbnb characteristics. Therefore, looking at two variables one can explore how closely related they are to one another. In relation to specifically price, this shows that the number of bathrooms have the strongest effect on nightly prices with a correlation coefficient of 0.51. This shows that as the number of bathrooms increases, the price per night also increases at a moderate rate. The number of bedrooms is the same case, in which it is one of the stronger features. On the other hand, demand and activity metrics such as reviews and availability have less of a correlation/effect on the price. This is overall showing that the physical attributes of a place have more of an effect on price. Take a look at the heatmap to see what other variables strongly correlate with each other!
+                </p>
+            
+                <img 
+                    src="correlation_heatmap.png" 
+                    alt="Correlation Heatmap" 
+                    style="width: 100%; max-width: 900px; border-radius: 12px; display: block; margin: 20px auto;">
+            </div>
+            
+            
+            
         </div>
     </section>
 
