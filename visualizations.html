@@ -37,7 +37,7 @@
             
                 <iframe 
                     src="box_plot.html" 
-                    width="100%" 
+                    width="850px" 
                     height="600px" 
                     style="border:none; border-radius:12px;">
                 </iframe>
@@ -55,7 +55,7 @@
             
                 <iframe 
                     src="scatter.html" 
-                    width="100%" 
+                    width="1350px" 
                     height="650px" 
                     style="border:none; border-radius:12px; margin-top: 20px;">
                 </iframe>
@@ -83,12 +83,9 @@
             <div class="chart-section">
                 <h3>Map Plot: Average Price per Night & Listing Density</h3>
                 <p>
-                    This interactive map shows Airbnb prices and density across Boston neighborhoods. 
-                    Fill color (orange gradient) represents the average nightly price, 
-                    while border thickness (pink) encodes the density of listings. 
-                    Hovering over a neighborhood reveals both metrics in detail. 
-                    Together, these encodings highlight areas that are both expensive and saturated 
-                    with Airbnbs, offering insight into Boston’s short‑term rental market.
+                    In this map visualization, Airbnb prices and listing density are encoded across Boston neighborhoods utilizing geojson. The orange fill color represents the average nightly price, ranging from lighter tones for budget-friendly areas to deeper orange for more expensive areas. Meanwhile, the pink border thickness encodes the number of listings in each neighborhood, with thicker outlines indicating higher density. This dual encoding allows viewers to quickly identify areas that are both expensive and saturated with Airbnb activity.
+
+There is a clear trend here. The closer a neighborhood is to downtown Boston or to high-demand, resource rich areas like Back Bay, Beacon Hill, or the South End, the more expensive it tends to be. These central and upscale districts show deeper orange fill, which reflects its nightly prices driven by the amenities and tourist spots in the area. In contrast, neighborhoods farther from the city center or with fewer tourist spots seem to have lighter fill colors, indicating cheaper listings. Hovering over each neighborhood reveals exact metrics, including average price and listing count which is helpful when comparing. The legend supports these encodings, showing price benchmarks from $200 to $800 and listing density from 3 to 496.
                 </p>
             
                 <iframe 
@@ -105,15 +102,8 @@
             <div class="chart-section">
                 <h3>Scatter Plot: Price vs. Review Score (Value)</h3>
                 <p>
-                    This scatter plot examines the relationship between nightly price and perceived value across Boston Airbnb listings. 
-                    Each point represents a listing, plotted by price per night on the x-axis and review score (1–5) on the y-axis. 
-                    Colors distinguish different room types, and a dropdown filter allows you to switch between room types to reduce overlap and highlight patterns more clearly.
-                    How to read this chart:<br>
-                    • X-axis: Price per night in USD<br>
-                    • Y-axis: Guest review score for value (1–5)<br>
-                    • Color: Room type (Entire home/apartment, Private room, Shared room, etc.)<br>
-                    • Dropdown: Focus on one room type at a time                </p>
-            
+                    In this scatter plot, each point represents an Airbnb listing in Boston, plotted by price per night on the x-axis and guest review score for value (1–5) on the y-axis. Listings are color-coded by room type—such as entire home/apartment, private room, hotel room, or shared room—and a dropdown filter to isolate one type at a time for clearer analysis. Additionally, point size is dynamically scaled by the number of reviews, so listings with more guest feedback appear larger and stand out visually. This encoding helps highlight popular or well-established listings within each room category. The chart reveals that most listings cluster between $50 and $300, with review scores  near the top of the scale (4.5–5.0), indicating  high satisfaction across price points typically. Entire homes tend to occupy higher price ranges, while private and shared rooms dominate the budget segment. Outliers are also visible like some high-priced listings receive lower value scores, suggesting potential mismatches in guest expectations, while some low-priced listings achieve high scores, signaling strong value. Overall, the chart shows that perceived value is not strictly tied to price, and that room type and review volume both play roles in shaping guest experience.
+                    </p>            
                 <iframe 
                     src="scatterplot.html" 
                     width="1000px" 
