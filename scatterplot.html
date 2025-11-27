@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scatter Plot - Price vs. Review Score</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: Montserrat, Arial, sans-serif;
+      margin: 40px;
+      background: #fafafa;
+    }
+    h2 {
+      color: #FF5A5F;
+    }
+    svg {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    select {
+      margin-bottom: 20px;
+      padding: 5px;
+      font-size: 14px;
+    }
+    .legend text {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Scatter Plot: Price vs. Review Score (Value)</h2>
+  <label for="roomTypeSelect">Choose Room Type:</label>
+  <select id="roomTypeSelect"></select>
+  <svg id="scatterplot" width="900" height="500"></svg>
+
+  <script>
+    const svg = d3.select("#scatterplot"),
+          width = +svg.attr("width"),
+          height = +svg.attr("height"),
+          margin = {top: 20, right: 30, bottom: 50, left: 60};
+
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const g = svg.append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    d3.csv("cleaned_listings.csv").then(data => {
+      const filtered = data.filter(d =>
+        !isNaN(+d.price_per_night) &&
+        !isNaN(+d.review_scores_value) &&
+        d.room_type
+      );
+
+      const roomTypes = [...new Set(filtered.map(d => d.room_type))];
+
+      // Populate dropdown
+      const select = d3.select("#roomTypeSelect");
+      select.selectAll("option")
+        .data(roomTypes)
+        .enter()
+        .append("option")
+        .attr("value", d => d)
+        .text(d => d);
+
+      const x = d3.scaleLinear()
+        .domain([0, d3.max(filtered, d => +d.price_per_night)])
+        .nice()
+        .range([0, chartWidth]);
+
+      const y = d3.scaleLinear()
+        .domain([1, 5]) // review_scores_value is on a 1–5 scale
+        .range([chartHeight, 0]);
+
+      const color = d3.scaleOrdinal()
+        .domain(roomTypes)
+        .range(["#FF5A5F", "#00A699", "#484848", "#FC642D"]); 
+        // Airbnb palette: red, teal, dark gray, orange
+
+      // Axes
+      g.append("g")
+        .attr("transform", `translate(0,${chartHeight})`)
+        .call(d3.axisBottom(x));
+
+      g.append("g")
+        .call(d3.axisLeft(y));
+
+      // Axis labels
+      g.append("text")
+        .attr("x", chartWidth / 2)
+        .attr("y", chartHeight + 40)
+        .attr("text-anchor", "middle")
+        .text("Price per Night ($)");
+
+      g.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -chartHeight / 2)
+        .attr("y", -margin.left + 15)
+        .attr("text-anchor", "middle")
+        .text("Review Score (1–5)");
+
+      // Function to update scatter plot
+      function updateScatter(selectedRoomType) {
+        const roomData = filtered.filter(d => d.room_type === selectedRoomType);
+
+        const circles = g.selectAll("circle")
+          .data(roomData, d => d.id || d.listing_id);
+
+        circles.enter()
+          .append("circle")
+          .attr("cx", d => x(+d.price_per_night))
+          .attr("cy", d => y(+d.review_scores_value))
+          .attr("r", 4)
+          .attr("fill", d => color(d.room_type))
+          .attr("opacity", 0.7)
+          .merge(circles)
+          .transition()
+          .duration(500)
+          .attr("cx", d => x(+d.price_per_night))
+          .attr("cy", d => y(+d.review_scores_value))
+          .attr("fill", d => color(d.room_type));
+
+        circles.exit().remove();
+      }
+
+      // Initialize with first room type
+      updateScatter(roomTypes[0]);
+
+      // Update when dropdown changes
+      select.on("change", function() {
+        const selected = this.value;
+        updateScatter(selected);
+      });
+
+      // Legend
+      const legend = svg.append("g")
+        .attr("class", "legend")
+        .attr("transform", `translate(${width - 200},40)`);
+
+      roomTypes.forEach((type, i) => {
+        legend.append("rect")
+          .attr("x", 0)
+          .attr("y", i * 25)
+          .attr("width", 20)
+          .attr("height", 20)
+          .attr("fill", color(type));
+        legend.append("text")
+          .attr("x", 30)
+          .attr("y", i * 25 + 15)
+          .text(type);
+      });
+    });
+  </script>
+</body>
+</html>
+
