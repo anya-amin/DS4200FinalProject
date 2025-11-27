@@ -9,7 +9,7 @@ const normalize = str => str.toLowerCase().replace(/\s+/g, '');
 
 Promise.all([
   d3.json("boston_neighborhoods.geojson"),
-  d3.csv("cleaned_listings.csv")
+  d3.csv("../cleaned_listings.csv")
 ]).then(([geojson, data]) => {
   const priceByNeighborhood = {};
   const listingsCount = {};

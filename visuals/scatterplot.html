@@ -46,7 +46,7 @@
     const g = svg.append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    d3.csv("cleaned_listings.csv").then(data => {
+    d3.csv("../cleaned_listings.csv").then(data => {
       const filtered = data.filter(d =>
         !isNaN(+d.price_per_night) &&
         !isNaN(+d.review_scores_value) &&
