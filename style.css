@@ -7,6 +7,14 @@ body {
     background-color: #ffffff;
 }
 
+.content-image {
+    width: 600px;
+    height: auto;
+    border-radius: 12px;
+    display: block;
+    margin: 30px auto 30px auto;  
+}
+
 /* Nav bar */
 .navbar {
     display: flex;
