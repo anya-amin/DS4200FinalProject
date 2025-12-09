@@ -45,14 +45,11 @@ Promise.all([
   const scale = 0.95 / Math.max(dx / width, dy / height);
   const translate = [width / 2 - scale * x, height / 2 - scale * y];
 
-  const projection = d3.geoTransform({
-    point: function(lon, lat) {
-      this.stream.point(lon * scale + translate[0], lat * scale + translate[1]);
-    }
-  });
+  const projection = d3.geoIdentity()
+  .reflectY(true)
+  .fitSize([width, height], geojson);
 
-  const geoPath = d3.geoPath().projection(projection);
-
+const geoPath = d3.geoPath().projection(projection);
   svg.append("g")
     .selectAll("path")
     .data(geojson.features)
