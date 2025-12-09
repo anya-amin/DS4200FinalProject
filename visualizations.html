@@ -103,14 +103,16 @@
 
 
             <div class="chart-section">
-                <h3>Price per Night by Review Score Category</h3>
+                <h3>Grouped Bar Plot: Price per Night by Review Score Category</h3>
                 <p>
-            This boxplot displays the distribution of Airbnb listing prices in Boston, grouped by guest review score categories (1-2, 2-3, 3-4, 4-4.5, and 4.5-5). A dropdown filter allows users to isolate listings by room type—such as entire home/apartment, private room, or shared room—for clearer comparison. Each box shows the interquartile range (IQR) with the median price marked by a horizontal line, while the whiskers extend to show the range of typical prices within each category. Hovering over a box reveals detailed statistics including the count of listings, median, quartiles, and min/max values.
-            The chart reveals several insights: for entire homes, median prices remain relatively consistent across review score categories (around $200-$270), suggesting that price alone does not determine guest satisfaction. Interestingly, the lowest-rated listings (1-2) show a higher median price than mid-range scores, which may indicate that overpriced listings receive harsher value ratings. Private rooms show a similar pattern at a lower price range (median around $75-$105), with the highest-rated category (4.5-5) containing the widest spread of prices. Overall, the visualization demonstrates that perceived value is not strictly tied to price, and that guests across all price points can achieve high satisfaction when expectations are met.                    </p>    
-                    <p><strong>Interact: Use the drop-down to select room type! </strong> <em></em></p>
+This bar chart displays the average Airbnb listing price in Boston, grouped by guest review score categories (1-2, 2-3, 3-4, 4-4.5, and 4.5-5). A dropdown filter allows users to isolate listings by room type—such as entire home/apartment, private room, or shared room—for clearer comparison. Each bar represents the average price per night for listings within that review score category. Hovering over a bar reveals the score category, average price, and number of listings.
+
+The chart reveals several insights: for entire homes, average prices remain relatively consistent across review score categories (around $220-$290), suggesting that price alone does not determine guest satisfaction. Interestingly, the lowest-rated listings (1-2) show a higher average price than mid-range scores, which may indicate that overpriced listings receive harsher value ratings from guests. Private rooms show a similar pattern at a lower price range (around $85-$135), with the lowest-rated category (1-2) having the highest average price. Overall, the visualization demonstrates that perceived value is not strictly tied to price, and that guests across all price points can achieve high satisfaction when expectations are met.
+</p>    
+<p><strong>Interact: Use the drop-down to select room type! Hover over bars to see details.</strong></p>
         
                 <iframe 
-                    src="visuals/box_plot_2.html" 
+                    src="visuals/grouped_bar_plot.html" 
                     width="1000px" 
                     height="850px" 
                     style="border:none; border-radius:12px; margin-top: 20px;">
