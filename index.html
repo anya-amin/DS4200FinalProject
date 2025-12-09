@@ -17,7 +17,6 @@
             <li><a href="recommendations.html">Recommendations</a></li>
         </ul>
     </nav>
-
     <!-- Intro Section -->
     <section class="intro">
         <div class="intro-content">
@@ -45,10 +44,11 @@
                 through features like dropdown filters, interval selections, and hover tooltips, enabling users to filter, zoom, and drill down into specific
                 insights. Explore more of the final project on this webpage!
             </p>
+            <p><strong>Key Question: </strong> <em>Which factors have the greatest impact on Airbnb listing prices in Boston, and which factors have minimal influence? </em></p>
         </div>
     </section>
 
-    <!-- line -->
+    
     <hr class="section-divider">
 
     <!-- Data Introduction Section -->
@@ -59,10 +59,39 @@
                 The dataset used is derived from InsideAirbnb, an open data source, which provides detailed public data on Airbnb listings in major cities. 
                 The Boston dataset has 4560 listings and 23 features describing each property and host. The many features include room type, neighborhood, 
                 price and many others. The Airbnb dataset is a good fit for studying how different factors affect the price of listings in Boston as it 
-                includes insightful details about each Airbnb and host. In the end, after the dataset was filtered and cleaned, it included 13 of the 
-                most relevant attributes and 3649 data points.
+                includes insightful details about each Airbnb and host. In the end, after the dataset was filtered and cleaned, it included 16 of the most relevant
+                attributes that was wanted for this project. 3642 data points were kept after removing any data points that were incomplete or had missing values.
+                A table of all the attributes and their descriptions are included below in order to understand the dataset better!
             </p>
-            
+<!-- Table for data attributes -->
+<div style="text-align: center;">
+    <table border="1" cellspacing="0" cellpadding="5" style="margin: auto;">
+        <thead>
+            <tr>
+                <th>Column Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>name</td><td>Name of the listing on the Airbnb website</td></tr>
+            <tr><td>host_name</td><td>Name of the host correlated with the listing</td></tr>
+            <tr><td>neighbourhood</td><td>Location of the listing</td></tr>
+            <tr><td>room_type</td><td>The type of listing whether it is an entire house, a private room, etc.</td></tr>
+            <tr><td>price_per_night</td><td>Price of the Airbnb per night</td></tr>
+            <tr><td>minimum_nights</td><td>Minimum required nights for stay</td></tr>
+            <tr><td>number_of_reviews</td><td>Number of reviews for that specified listing</td></tr>
+            <tr><td>reviews_per_month</td><td>Number of reviews per month for that listing</td></tr>
+            <tr><td>calculated_host_listings_count</td><td>Number of listings that the host has</td></tr>
+            <tr><td>availability_365</td><td>Number of days the listing is available out of the year</td></tr>
+            <tr><td>number_of_reviews_ltm</td><td>FILL IN </td></tr>
+            <tr><td>bathrooms</td><td>Number of bathrooms in the listing</td></tr>
+            <tr><td>bedrooms</td><td>Number of bedrooms in the listing</td></tr>
+            <tr><td>host_response_rate</td><td>The response rate of the host as a percentage</td></tr>
+            <tr><td>review_score_value</td><td>FILL IN</td></tr>
+            <tr><td>host_response_time</td><td>Descripting of how well the host responds</td></tr>
+        </tbody>
+    </table>
+</div>
             <h3>References</h3>
             <div class="cards">
                 <div class="card">
@@ -87,7 +116,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>DS4200 - Airbnb Boston Analysis Project</p>
+        <p> Anya Amin, Divya Thoppae, Paul Harb | DS4200 - Airbnb Boston Analysis Project</p>
     </footer>
 </body>
 </html>

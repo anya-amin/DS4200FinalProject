@@ -12,7 +12,7 @@ body {
     height: auto;
     border-radius: 12px;
     display: block;
-    margin: 30px auto 30px auto;  
+    margin: 40px auto 40px auto;  
 }
 
 /* Nav bar */
@@ -129,8 +129,8 @@ body {
 /* Horizontal divider */
 .section-divider {
     border: 0;
-    height: 2px;
-    background-color: #ff5a5f;    
+    height: 4px;
+    background-color: #ff5a5f;   
 }
 
 /* Data Introduction Section */
@@ -195,7 +195,7 @@ h2 {
 
 h3 {
     font-size: 1.5rem;
-    margin-top: 80px;
+    margin-top: 30px;
     margin-bottom: 10px;
 }
 
@@ -206,7 +206,6 @@ footer {
     text-align: center;
     padding: 20px;
 }
-
 
 @media (max-width: 900px) {
     .hero {

@@ -32,8 +32,10 @@
             <div class="chart-section">
                 <h3>Box Plot: Price per Night by Room Type and Neighborhood</h3>
                 <p>
-                    In this box plot, the nightly Airbnb prices are being compared across room type and neighborhood. The user can use the drop-down to select the neighborhood and using the legend on the right to identify the colors, the boxes can be explored for each room type. In this chart, it clearly shows how room type has a significant effect on the nightly prices, as an entire home is relatively more across all neighborhoods than just a private room. The use of showing the different neighborhoods exemplifies how this holds true across all of them, except for one outlier of Back Bay. In Back Bay, a private room is actually slightly more money in comparison to a home, which shows how neighborhoods can affect how the prices are for different types. Given that Back Bay is a more touristic area, this would make sense. Exploring all the neighborhoods would be helpful to get a feel for this pricing. 
+                    In this box plot, the nightly Airbnb prices are being compared across room type and neighborhood. The user can use the drop-down to select the neighborhood and using the legend on the right to identify the colors, the boxes can be explored for each room type. It clearly shows how room type has a significant effect on the nightly prices, as an entire home is relatively more across all neighborhoods than just a private room. The use of showing the different neighborhoods exemplifies how this holds true across all of them, except for one outlier of Back Bay. In Back Bay, a private room is actually slightly more money in comparison to a home, which shows how neighborhoods can affect how the prices are for different types. Given that Back Bay is a more touristic area, this would make sense. Exploring all the neighborhoods would be helpful to get a feel for this pricing. 
                 </p>
+                <p><strong>Interact: Use the drop-down to select with neighborhood you want to see! Hover over the boxplot to see the stats. </strong> <em></em></p>
+
             
                 <iframe 
                     src="visuals/box_plot.html" 
@@ -42,16 +44,17 @@
                     style="border:none; border-radius:12px;">
                 </iframe>
             </div>
-            <hr class="section-divider">
 
-
+    <hr class="section-divider">
+    
             <div class="chart-section">
                 <h3>Scatter Plot: Listings per Host vs. Average Price + Host Response Rate</h3>
             
                 <p>
                     In this scatter plot, the number of listings per host is compared to their average price per night. Then, using an interval brush, one can explore the host response rate, also compared to the average price per night for that host. In the first chart, large multi-listing hosts mainly cluster in the lower price range (under $200 per night), suggesting that hosts tend to operate cheaper, more standardized units, while higher-priced listings (above $400) are owned by hosts with only one or a few properties. In the second chart, host response rates remain consistently high (between 90% and 100%) across all price levels, showing that both budget and luxury listings provide similarly fast communication. A few low-response outliers exist, but they appear randomly across different price points. Overall, the charts suggest that Airbnb pricing is not strongly influenced by responsiveness, meanwhile slightly affected by the number of listings per host. 
-
                 </p>
+                <p><strong>Interact: Use the slider to filter to a certain price and zoom in an out in order to have a clear view of the points! Hover over points to view the information about the host and their listings count/response rate. Also, if you only want to see one room type, use the legend to select which one!</strong> <em></em></p>
+
             
                 <iframe 
                     src="visuals/scatter.html" 
@@ -85,6 +88,8 @@
                 <p>
                     In this map visualization, Airbnb prices and listing density are encoded across Boston neighborhoods utilizing geojson. The orange fill color represents the average nightly price, ranging from lighter tones for budget-friendly areas to deeper orange for more expensive areas. Meanwhile, the pink border thickness encodes the number of listings in each neighborhood, with thicker outlines indicating higher density. This dual encoding allows viewers to quickly identify areas that are both expensive and saturated with Airbnb activity.There is a clear trend here. The closer a neighborhood is to downtown Boston or to high-demand, resource rich areas like Back Bay, Beacon Hill, or the South End, the more expensive it tends to be. These central and upscale districts show deeper orange fill, which reflects its nightly prices driven by the amenities and tourist spots in the area. In contrast, neighborhoods farther from the city center or with fewer tourist spots seem to have lighter fill colors, indicating cheaper listings. Hovering over each neighborhood reveals exact metrics, including average price and listing count which is helpful when comparing. The legend supports these encodings, showing price benchmarks from $200 to $800 and listing density from 3 to 496.
                 </p>
+                 <p><strong>Interact: Hover over a neighborhood to see their average price and number of listings! </strong> <em></em></p>
+
             
                 <iframe 
                     src="visuals/mapplot.html" 
@@ -101,25 +106,21 @@
                 <h3>Scatter Plot: Price vs. Review Score (Value)</h3>
                 <p>
                     In this scatter plot, each point represents an Airbnb listing in Boston, plotted by price per night on the x-axis and guest review score for value (1–5) on the y-axis. Listings are color-coded by room type—such as entire home/apartment, private room, hotel room, or shared room—and a dropdown filter to isolate one type at a time for clearer analysis. Additionally, point size is dynamically scaled by the number of reviews, so listings with more guest feedback appear larger and stand out visually. This encoding helps highlight popular or well-established listings within each room category. The chart reveals that most listings cluster between $50 and $300, with review scores  near the top of the scale (4.5–5.0), indicating  high satisfaction across price points typically. Entire homes tend to occupy higher price ranges, while private and shared rooms dominate the budget segment. Outliers are also visible like some high-priced listings receive lower value scores, suggesting potential mismatches in guest expectations, while some low-priced listings achieve high scores, signaling strong value. Overall, the chart shows that perceived value is not strictly tied to price, and that room type and review volume both play roles in shaping guest experience.
-                    </p>            
+                    </p>    
+                    <p><strong>Interact: Use the drop-down to select room type! </strong> <em></em></p>
+        
                 <iframe 
                     src="visuals/scatterplot.html" 
                     width="1000px" 
                     height="850px" 
                     style="border:none; border-radius:12px; margin-top: 20px;">
                 </iframe>
-            </div>
-            
-
-            
-            
-            
-            
+            </div>    
         </div>
     </section>
 
     <footer>
-        <p>DS4200 - Airbnb Boston Analysis Project</p>
+        <p>Anya Amin, Divya Thoppae, Paul Harb | DS4200 - Airbnb Boston Analysis Project</p>
     </footer>
 </body>
 </html>
