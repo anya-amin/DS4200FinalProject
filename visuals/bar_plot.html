@@ -44,7 +44,7 @@
   <svg id="chart" width="900" height="500"></svg>
 
   <script>
-    const scoreCategories = ["1-2", "2-3", "3-4", "4-4.5", "4.5-5"];
+    const scoreCategories = ["1-2", "2-3", "3-4", "4-5"];
 
     const tooltip = d3.select("body").append("div")
       .attr("class", "tooltip");
@@ -82,8 +82,7 @@
         if (score < 2) return "1-2";
         if (score < 3) return "2-3";
         if (score < 4) return "3-4";
-        if (score < 4.5) return "4-4.5";
-        return "4.5-5";
+        return "4-5";
       }
 
       const color = d3.scaleOrdinal()
@@ -146,7 +145,7 @@
         y.domain([0, Math.max(maxPrice, 100)]).nice();
         yAxisGroup.transition().duration(500).call(d3.axisLeft(y).tickFormat(d => "$" + d));
 
-        // Binddata
+        // Bind data
         const bars = g.selectAll(".bar")
           .data(barData);
 
@@ -167,7 +166,7 @@
             tooltip.transition().duration(200).style("opacity", 1);
             tooltip.html(`
               <strong>Score: ${d.category}</strong><br/>
-              Avg Price: ${d.avgPrice.toFixed(2)}<br/>
+              Avg Price: $${d.avgPrice.toFixed(2)}<br/>
               Count: ${d.count} listings
             `)
             .style("left", (event.pageX + 15) + "px")
