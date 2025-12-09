@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Boxplot - Price by Review Score</title>
+  <title>Grouped Bar Chart - Price by Review Score</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body {
@@ -16,11 +16,6 @@
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    select {
-      margin-bottom: 20px;
-      padding: 5px;
-      font-size: 14px;
-    }
     .tooltip {
       position: absolute;
       background: white;
@@ -32,25 +27,25 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       opacity: 0;
     }
-    .box-group rect {
-      cursor: pointer;
-    }
-    .box-group:hover rect {
+    .bar:hover {
       opacity: 1;
+      stroke: #333;
       stroke-width: 2;
+    }
+    .legend {
+      font-size: 12px;
     }
   </style>
 </head>
 <body>
-  <h2>Boxplot: Price per Night by Review Score Category</h2>
+  <h2>Average Price per Night by Review Score Category</h2>
   <label for="roomTypeSelect">Choose Room Type:</label>
   <select id="roomTypeSelect"></select>
-  <svg id="boxplot" width="900" height="500"></svg>
+  <svg id="chart" width="900" height="500"></svg>
 
   <script>
     const scoreCategories = ["1-2", "2-3", "3-4", "4-4.5", "4.5-5"];
 
-    // Create tooltip
     const tooltip = d3.select("body").append("div")
       .attr("class", "tooltip");
 
@@ -63,7 +58,16 @@
 
       const roomTypes = [...new Set(filtered.map(d => d.room_type))];
 
-      const svg = d3.select("#boxplot"),
+      // Populate dropdown
+      const select = d3.select("#roomTypeSelect");
+      select.selectAll("option")
+        .data(roomTypes)
+        .enter()
+        .append("option")
+        .attr("value", d => d)
+        .text(d => d);
+
+      const svg = d3.select("#chart"),
             width = +svg.attr("width"),
             height = +svg.attr("height"),
             margin = {top: 20, right: 30, bottom: 60, left: 70};
@@ -82,49 +86,34 @@
         return "4.5-5";
       }
 
-      function computeBoxplotStats(values) {
-        values.sort(d3.ascending);
-        const q1 = d3.quantile(values, 0.25);
-        const median = d3.quantile(values, 0.5);
-        const q3 = d3.quantile(values, 0.75);
-        const iqr = q3 - q1;
-        const min = Math.max(d3.min(values), q1 - 1.5 * iqr);
-        const max = Math.min(d3.max(values), q3 + 1.5 * iqr);
-        const count = values.length;
-        return { min, q1, median, q3, max, count };
-      }
+      const color = d3.scaleOrdinal()
+        .domain(roomTypes)
+        .range(["#FF5A5F", "#00A699", "#484848", "#FC642D"]);
 
-      const select = d3.select("#roomTypeSelect");
-      select.selectAll("option")
-        .data(roomTypes)
-        .enter()
-        .append("option")
-        .attr("value", d => d)
-        .text(d => d);
-
+      // X scale for categories
       const x = d3.scaleBand()
         .domain(scoreCategories)
         .range([0, chartWidth])
         .padding(0.3);
 
+      // Y scale for price
       const y = d3.scaleLinear()
-        .domain([0, 600])
+        .domain([0, 400])
         .nice()
         .range([chartHeight, 0]);
 
-      const color = d3.scaleOrdinal()
-        .domain(roomTypes)
-        .range(["#FF5A5F", "#00A699", "#484848"]);
-
+      // X axis
       g.append("g")
         .attr("class", "x-axis")
         .attr("transform", `translate(0,${chartHeight})`)
         .call(d3.axisBottom(x));
 
-      g.append("g")
+      // Y axis
+      const yAxisGroup = g.append("g")
         .attr("class", "y-axis")
-        .call(d3.axisLeft(y));
+        .call(d3.axisLeft(y).tickFormat(d => "$" + d));
 
+      // Axis labels
       g.append("text")
         .attr("x", chartWidth / 2)
         .attr("y", chartHeight + 45)
@@ -136,100 +125,77 @@
         .attr("x", -chartHeight / 2)
         .attr("y", -margin.left + 20)
         .attr("text-anchor", "middle")
-        .text("Price per Night ($)");
+        .text("Average Price per Night ($)");
 
-      function updateBoxplot(selectedRoomType) {
-        const roomData = filtered.filter(d => d.room_type === selectedRoomType);
-        const grouped = d3.group(roomData, d => binScore(d.review_scores_value));
-        
-        const boxData = scoreCategories.map(cat => {
-          const values = (grouped.get(cat) || []).map(d => +d.price_per_night);
-          if (values.length === 0) return { category: cat, stats: null };
-          return { category: cat, stats: computeBoxplotStats(values) };
+      function updateChart(selectedRoomType) {
+        // Calculate average price for selected room type
+        const barData = scoreCategories.map(cat => {
+          const listings = filtered.filter(d => 
+            d.room_type === selectedRoomType && 
+            binScore(+d.review_scores_value) === cat
+          );
+          const avgPrice = listings.length > 0 
+            ? d3.mean(listings, d => +d.price_per_night) 
+            : 0;
+          const count = listings.length;
+          return { category: cat, avgPrice, count };
         });
 
-        g.selectAll(".box-group").remove();
-        const boxWidth = x.bandwidth();
+        // Update y scale domain
+        const maxPrice = d3.max(barData, d => d.avgPrice) * 1.1;
+        y.domain([0, Math.max(maxPrice, 100)]).nice();
+        yAxisGroup.transition().duration(500).call(d3.axisLeft(y).tickFormat(d => "$" + d));
 
-        boxData.forEach(d => {
-          if (!d.stats) return;
-          
-          const boxG = g.append("g")
-            .attr("class", "box-group")
-            .attr("transform", `translate(${x(d.category)}, 0)`);
+        // Binddata
+        const bars = g.selectAll(".bar")
+          .data(barData);
 
-          // Vertical line (whiskers)
-          boxG.append("line")
-            .attr("x1", boxWidth / 2)
-            .attr("x2", boxWidth / 2)
-            .attr("y1", y(d.stats.min))
-            .attr("y2", y(d.stats.max))
-            .attr("stroke", "#333")
-            .attr("stroke-width", 1);
+        // Remove old bars
+        bars.exit().remove();
 
-          // Box with hover events
-          boxG.append("rect")
-            .attr("x", 0)
-            .attr("y", y(d.stats.q3))
-            .attr("width", boxWidth)
-            .attr("height", y(d.stats.q1) - y(d.stats.q3))
-            .attr("fill", color(selectedRoomType))
-            .attr("stroke", "#333")
-            .attr("opacity", 0.8)
-            .on("mouseover", function(event) {
-              tooltip.transition().duration(200).style("opacity", 1);
-              tooltip.html(`
-                <strong>Score: ${d.category}</strong><br/>
-                Count: ${d.stats.count} listings<br/>
-                Max: $${d.stats.max.toFixed(2)}<br/>
-                Q3: $${d.stats.q3.toFixed(2)}<br/>
-                Median: $${d.stats.median.toFixed(2)}<br/>
-                Q1: $${d.stats.q1.toFixed(2)}<br/>
-                Min: $${d.stats.min.toFixed(2)}
-              `)
+        // Add new bars and update existing
+        bars.enter()
+          .append("rect")
+          .attr("class", "bar")
+          .attr("x", d => x(d.category))
+          .attr("width", x.bandwidth())
+          .attr("y", chartHeight)
+          .attr("height", 0)
+          .attr("fill", color(selectedRoomType))
+          .attr("opacity", 0.85)
+          .on("mouseover", function(event, d) {
+            tooltip.transition().duration(200).style("opacity", 1);
+            tooltip.html(`
+              <strong>Score: ${d.category}</strong><br/>
+              Avg Price: ${d.avgPrice.toFixed(2)}<br/>
+              Count: ${d.count} listings
+            `)
+            .style("left", (event.pageX + 15) + "px")
+            .style("top", (event.pageY - 30) + "px");
+          })
+          .on("mousemove", function(event) {
+            tooltip
               .style("left", (event.pageX + 15) + "px")
               .style("top", (event.pageY - 30) + "px");
-            })
-            .on("mousemove", function(event) {
-              tooltip
-                .style("left", (event.pageX + 15) + "px")
-                .style("top", (event.pageY - 30) + "px");
-            })
-            .on("mouseout", function() {
-              tooltip.transition().duration(300).style("opacity", 0);
-            });
-
-          // Median line
-          boxG.append("line")
-            .attr("x1", 0)
-            .attr("x2", boxWidth)
-            .attr("y1", y(d.stats.median))
-            .attr("y2", y(d.stats.median))
-            .attr("stroke", "#333")
-            .attr("stroke-width", 2)
-            .style("pointer-events", "none");
-
-          // Whisker caps
-          boxG.append("line")
-            .attr("x1", boxWidth * 0.25)
-            .attr("x2", boxWidth * 0.75)
-            .attr("y1", y(d.stats.min))
-            .attr("y2", y(d.stats.min))
-            .attr("stroke", "#333");
-
-          boxG.append("line")
-            .attr("x1", boxWidth * 0.25)
-            .attr("x2", boxWidth * 0.75)
-            .attr("y1", y(d.stats.max))
-            .attr("y2", y(d.stats.max))
-            .attr("stroke", "#333");
-        });
+          })
+          .on("mouseout", function() {
+            tooltip.transition().duration(300).style("opacity", 0);
+          })
+          .merge(bars)
+          .transition()
+          .duration(500)
+          .attr("x", d => x(d.category))
+          .attr("y", d => y(d.avgPrice))
+          .attr("height", d => chartHeight - y(d.avgPrice))
+          .attr("fill", color(selectedRoomType));
       }
 
-      updateBoxplot(roomTypes[0]);
+      // Initial render
+      updateChart(roomTypes[0]);
 
+      // Update on dropdown change
       select.on("change", function() {
-        updateBoxplot(this.value);
+        updateChart(this.value);
       });
     });
   </script>
