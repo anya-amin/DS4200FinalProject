@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Scatter Plot - Price vs. Review Score</title>
+  <title>Boxplot - Price by Review Score</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body {
@@ -10,9 +10,7 @@
       margin: 40px;
       background: #fafafa;
     }
-    h2 {
-      color: #FF5A5F;
-    }
+    h2 { color: #FF5A5F; }
     svg {
       background: white;
       border-radius: 8px;
@@ -23,28 +21,38 @@
       padding: 5px;
       font-size: 14px;
     }
-    .legend text {
-      font-size: 14px;
+    .tooltip {
+      position: absolute;
+      background: white;
+      border: 1px solid #FF5A5F;
+      border-radius: 4px;
+      padding: 10px;
+      pointer-events: none;
+      font-size: 13px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      opacity: 0;
+    }
+    .box-group rect {
+      cursor: pointer;
+    }
+    .box-group:hover rect {
+      opacity: 1;
+      stroke-width: 2;
     }
   </style>
 </head>
 <body>
-  <h2>Scatter Plot: Price vs. Review Score (Value)</h2>
+  <h2>Boxplot: Price per Night by Review Score Category</h2>
   <label for="roomTypeSelect">Choose Room Type:</label>
   <select id="roomTypeSelect"></select>
-  <svg id="scatterplot" width="900" height="500"></svg>
+  <svg id="boxplot" width="900" height="500"></svg>
 
   <script>
-    const svg = d3.select("#scatterplot"),
-          width = +svg.attr("width"),
-          height = +svg.attr("height"),
-          margin = {top: 20, right: 30, bottom: 50, left: 60};
+    const scoreCategories = ["1-2", "2-3", "3-4", "4-4.5", "4.5-5"];
 
-    const chartWidth = width - margin.left - margin.right;
-    const chartHeight = height - margin.top - margin.bottom;
-
-    const g = svg.append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
+    // Create tooltip
+    const tooltip = d3.select("body").append("div")
+      .attr("class", "tooltip");
 
     d3.csv("../cleaned_listings.csv").then(data => {
       const filtered = data.filter(d =>
@@ -55,7 +63,37 @@
 
       const roomTypes = [...new Set(filtered.map(d => d.room_type))];
 
-      // Populate dropdown
+      const svg = d3.select("#boxplot"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height"),
+            margin = {top: 20, right: 30, bottom: 60, left: 70};
+
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+
+      const g = svg.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      function binScore(score) {
+        if (score < 2) return "1-2";
+        if (score < 3) return "2-3";
+        if (score < 4) return "3-4";
+        if (score < 4.5) return "4-4.5";
+        return "4.5-5";
+      }
+
+      function computeBoxplotStats(values) {
+        values.sort(d3.ascending);
+        const q1 = d3.quantile(values, 0.25);
+        const median = d3.quantile(values, 0.5);
+        const q3 = d3.quantile(values, 0.75);
+        const iqr = q3 - q1;
+        const min = Math.max(d3.min(values), q1 - 1.5 * iqr);
+        const max = Math.min(d3.max(values), q3 + 1.5 * iqr);
+        const count = values.length;
+        return { min, q1, median, q3, max, count };
+      }
+
       const select = d3.select("#roomTypeSelect");
       select.selectAll("option")
         .data(roomTypes)
@@ -64,94 +102,136 @@
         .attr("value", d => d)
         .text(d => d);
 
-      const x = d3.scaleLinear()
-        .domain([0, d3.max(filtered, d => +d.price_per_night)])
-        .nice()
-        .range([0, chartWidth]);
+      const x = d3.scaleBand()
+        .domain(scoreCategories)
+        .range([0, chartWidth])
+        .padding(0.3);
 
       const y = d3.scaleLinear()
-        .domain([1, 5]) // review_scores_value is on a 1–5 scale
+        .domain([0, 600])
+        .nice()
         .range([chartHeight, 0]);
 
       const color = d3.scaleOrdinal()
         .domain(roomTypes)
-        .range(["#FF5A5F", "#00A699", "#484848", "#FC642D"]); 
-        // Airbnb palette: red, teal, dark gray, orange
+        .range(["#FF5A5F", "#00A699", "#484848"]);
 
-      // Axes
       g.append("g")
+        .attr("class", "x-axis")
         .attr("transform", `translate(0,${chartHeight})`)
         .call(d3.axisBottom(x));
 
       g.append("g")
+        .attr("class", "y-axis")
         .call(d3.axisLeft(y));
 
-      // Axis labels
       g.append("text")
         .attr("x", chartWidth / 2)
-        .attr("y", chartHeight + 40)
+        .attr("y", chartHeight + 45)
         .attr("text-anchor", "middle")
-        .text("Price per Night ($)");
+        .text("Review Score Category");
 
       g.append("text")
         .attr("transform", "rotate(-90)")
         .attr("x", -chartHeight / 2)
-        .attr("y", -margin.left + 15)
+        .attr("y", -margin.left + 20)
         .attr("text-anchor", "middle")
-        .text("Review Score (1–5)");
+        .text("Price per Night ($)");
 
-      // Function to update scatter plot
-      function updateScatter(selectedRoomType) {
+      function updateBoxplot(selectedRoomType) {
         const roomData = filtered.filter(d => d.room_type === selectedRoomType);
+        const grouped = d3.group(roomData, d => binScore(d.review_scores_value));
+        
+        const boxData = scoreCategories.map(cat => {
+          const values = (grouped.get(cat) || []).map(d => +d.price_per_night);
+          if (values.length === 0) return { category: cat, stats: null };
+          return { category: cat, stats: computeBoxplotStats(values) };
+        });
 
-        const circles = g.selectAll("circle")
-          .data(roomData, d => d.id || d.listing_id);
+        g.selectAll(".box-group").remove();
+        const boxWidth = x.bandwidth();
 
-        circles.enter()
-          .append("circle")
-          .attr("cx", d => x(+d.price_per_night))
-          .attr("cy", d => y(+d.review_scores_value))
-          .attr("r", 4)
-          .attr("fill", d => color(d.room_type))
-          .attr("opacity", 0.7)
-          .merge(circles)
-          .transition()
-          .duration(500)
-          .attr("cx", d => x(+d.price_per_night))
-          .attr("cy", d => y(+d.review_scores_value))
-          .attr("fill", d => color(d.room_type));
+        boxData.forEach(d => {
+          if (!d.stats) return;
+          
+          const boxG = g.append("g")
+            .attr("class", "box-group")
+            .attr("transform", `translate(${x(d.category)}, 0)`);
 
-        circles.exit().remove();
+          // Vertical line (whiskers)
+          boxG.append("line")
+            .attr("x1", boxWidth / 2)
+            .attr("x2", boxWidth / 2)
+            .attr("y1", y(d.stats.min))
+            .attr("y2", y(d.stats.max))
+            .attr("stroke", "#333")
+            .attr("stroke-width", 1);
+
+          // Box with hover events
+          boxG.append("rect")
+            .attr("x", 0)
+            .attr("y", y(d.stats.q3))
+            .attr("width", boxWidth)
+            .attr("height", y(d.stats.q1) - y(d.stats.q3))
+            .attr("fill", color(selectedRoomType))
+            .attr("stroke", "#333")
+            .attr("opacity", 0.8)
+            .on("mouseover", function(event) {
+              tooltip.transition().duration(200).style("opacity", 1);
+              tooltip.html(`
+                <strong>Score: ${d.category}</strong><br/>
+                Count: ${d.stats.count} listings<br/>
+                Max: $${d.stats.max.toFixed(2)}<br/>
+                Q3: $${d.stats.q3.toFixed(2)}<br/>
+                Median: $${d.stats.median.toFixed(2)}<br/>
+                Q1: $${d.stats.q1.toFixed(2)}<br/>
+                Min: $${d.stats.min.toFixed(2)}
+              `)
+              .style("left", (event.pageX + 15) + "px")
+              .style("top", (event.pageY - 30) + "px");
+            })
+            .on("mousemove", function(event) {
+              tooltip
+                .style("left", (event.pageX + 15) + "px")
+                .style("top", (event.pageY - 30) + "px");
+            })
+            .on("mouseout", function() {
+              tooltip.transition().duration(300).style("opacity", 0);
+            });
+
+          // Median line
+          boxG.append("line")
+            .attr("x1", 0)
+            .attr("x2", boxWidth)
+            .attr("y1", y(d.stats.median))
+            .attr("y2", y(d.stats.median))
+            .attr("stroke", "#333")
+            .attr("stroke-width", 2)
+            .style("pointer-events", "none");
+
+          // Whisker caps
+          boxG.append("line")
+            .attr("x1", boxWidth * 0.25)
+            .attr("x2", boxWidth * 0.75)
+            .attr("y1", y(d.stats.min))
+            .attr("y2", y(d.stats.min))
+            .attr("stroke", "#333");
+
+          boxG.append("line")
+            .attr("x1", boxWidth * 0.25)
+            .attr("x2", boxWidth * 0.75)
+            .attr("y1", y(d.stats.max))
+            .attr("y2", y(d.stats.max))
+            .attr("stroke", "#333");
+        });
       }
 
-      // Initialize with first room type
-      updateScatter(roomTypes[0]);
+      updateBoxplot(roomTypes[0]);
 
-      // Update when dropdown changes
       select.on("change", function() {
-        const selected = this.value;
-        updateScatter(selected);
-      });
-
-      // Legend
-      const legend = svg.append("g")
-        .attr("class", "legend")
-        .attr("transform", `translate(${width - 200},40)`);
-
-      roomTypes.forEach((type, i) => {
-        legend.append("rect")
-          .attr("x", 0)
-          .attr("y", i * 25)
-          .attr("width", 20)
-          .attr("height", 20)
-          .attr("fill", color(type));
-        legend.append("text")
-          .attr("x", 30)
-          .attr("y", i * 25 + 15)
-          .text(type);
+        updateBoxplot(this.value);
       });
     });
   </script>
 </body>
 </html>
-
